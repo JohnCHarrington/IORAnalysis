@@ -1,0 +1,302 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>IORAnalysis.IOR &#8212; IOR Analysis 0.1.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.1.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="IOR Analysis 0.1.1 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for IORAnalysis.IOR</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">n</span>
+
+<span class="c1"># Then the IOR calculations</span>
+
+
+<div class="viewcode-block" id="IOR"><a class="viewcode-back" href="../../index.html#IORAnalysis.IOR">[docs]</a><span class="k">class</span> <span class="nc">IOR</span><span class="p">():</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Calculates IOR Rating for Defined Yacht.</span>
+<span class="sd">    Default values are for Indulgence.</span>
+
+<span class="sd">    Calculates IOR rating from certificate values.</span>
+<span class="sd">    Provides access to all calculated parameters from the IOR</span>
+<span class="sd">    certificate.</span>
+<span class="sd">    Currently only runs calculations for sail parameters and</span>
+<span class="sd">    righting moment. All others should be given.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    Certificate Values : float</span>
+<span class="sd">        All certificate values are available as attributes</span>
+<span class="sd">    Rating : float</span>
+<span class="sd">        Rating in it&#39;s official form, rounded to 1 d.p.</span>
+<span class="sd">    ballastChange : list</span>
+<span class="sd">        List containing difference from basis vessel ballast</span>
+<span class="sd">        position in the format [Ballast Amount, Distance  Moved].</span>
+<span class="sd">        Direction follows standard ship conventions, with</span>
+<span class="sd">        upwards being positive.</span>
+<span class="sd">    actualCGF : float</span>
+<span class="sd">        Calculated CGF value. Differs from certificate CGF only if</span>
+<span class="sd">        less than the minimum value of 0.9860.</span>
+
+<span class="sd">    Methods</span>
+<span class="sd">    -------</span>
+<span class="sd">    updateCert(changes=[{&#39;P&#39;: 41}, [3000, -0.1]])</span>
+<span class="sd">        Updates certificate values stored in attributes.</span>
+<span class="sd">    reqRMChange(reqRating=27.0)</span>
+<span class="sd">        Calculates the RM change required to acheive a certain rating.</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">cert</span><span class="o">=</span><span class="p">{},</span> <span class="n">ballastChange</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]):</span>
+        <span class="sd">&#39;&#39;&#39; Sets entered certificate values, runs initial calculations.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        cert : dict</span>
+<span class="sd">            Dictionary containing certificate values for the yacht.</span>
+<span class="sd">        ballastChange : list</span>
+<span class="sd">            List containing [Ballast Amount, Distance  Moved].</span>
+<span class="sd">            Direction follows standard ship conventions, with</span>
+<span class="sd">            upwards being positive.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">base_cert</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;L&#39;</span><span class="p">:</span> <span class="mf">30.8953</span><span class="p">,</span> <span class="s1">&#39;B&#39;</span><span class="p">:</span> <span class="mf">11.42</span><span class="p">,</span> <span class="s1">&#39;D&#39;</span><span class="p">:</span> <span class="mf">3.8691</span><span class="p">,</span>
+            <span class="s1">&#39;DC&#39;</span><span class="p">:</span> <span class="mf">0.0293</span><span class="p">,</span> <span class="s1">&#39;FC&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mf">0.0682</span><span class="p">,</span> <span class="s1">&#39;I&#39;</span><span class="p">:</span> <span class="mf">43.232</span><span class="p">,</span>
+            <span class="s1">&#39;J&#39;</span><span class="p">:</span> <span class="mf">12.4</span><span class="p">,</span> <span class="s1">&#39;LPG&#39;</span><span class="p">:</span> <span class="mi">18</span><span class="p">,</span> <span class="s1">&#39;LPIS&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;FSP&#39;</span><span class="p">:</span> <span class="mf">0.16</span><span class="p">,</span>
+            <span class="s1">&#39;IG&#39;</span><span class="p">:</span> <span class="mf">42.9</span><span class="p">,</span> <span class="s1">&#39;SPL&#39;</span><span class="p">:</span> <span class="mf">12.31</span><span class="p">,</span> <span class="s1">&#39;SL&#39;</span><span class="p">:</span> <span class="mf">40.5</span><span class="p">,</span>
+            <span class="s1">&#39;SMW&#39;</span><span class="p">:</span> <span class="mf">21.9</span><span class="p">,</span> <span class="s1">&#39;P&#39;</span><span class="p">:</span> <span class="mf">48.53</span><span class="p">,</span> <span class="s1">&#39;E&#39;</span><span class="p">:</span> <span class="mf">17.27</span><span class="p">,</span>
+            <span class="s1">&#39;BAL&#39;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span> <span class="s1">&#39;BD&#39;</span><span class="p">:</span> <span class="mf">0.87</span><span class="p">,</span> <span class="s1">&#39;BAS&#39;</span><span class="p">:</span> <span class="mf">5.56</span><span class="p">,</span>
+            <span class="s1">&#39;HB&#39;</span><span class="p">:</span> <span class="mf">0.67</span><span class="p">,</span> <span class="s1">&#39;CGF&#39;</span><span class="p">:</span> <span class="mf">0.968</span><span class="p">,</span> <span class="s1">&#39;EPF&#39;</span><span class="p">:</span> <span class="mf">0.9641</span><span class="p">,</span>
+            <span class="s1">&#39;MAF&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;DLF&#39;</span><span class="p">:</span> <span class="mf">1.0032</span><span class="p">,</span> <span class="s1">&#39;SMF&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;LRP&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="s1">&#39;CBF&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="p">}</span>
+
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">base_cert</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="nb">setattr</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">cert</span><span class="p">[</span><span class="n">k</span><span class="p">])</span>
+            <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                <span class="nb">setattr</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">base_cert</span><span class="p">[</span><span class="n">k</span><span class="p">])</span>
+
+        <span class="n">s</span><span class="o">.</span><span class="n">ballastChange</span> <span class="o">=</span> <span class="n">ballastChange</span>
+
+        <span class="n">s</span><span class="o">.</span><span class="n">Calc</span><span class="p">()</span>
+
+<div class="viewcode-block" id="IOR.updateCert"><a class="viewcode-back" href="../../index.html#IORAnalysis.IOR.updateCert">[docs]</a>    <span class="k">def</span> <span class="nf">updateCert</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">changes</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Updates certificate values stored in attributes</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        changes: list</span>
+<span class="sd">            List containing:</span>
+<span class="sd">                0 : dict</span>
+<span class="sd">                    Dictionary containing changes to certificate values for the yacht.</span>
+<span class="sd">                1 : list, optional</span>
+<span class="sd">                    List containing [Ballast Amount, Distance  Moved].</span>
+<span class="sd">                    Direction follows standard ship conventions, with</span>
+<span class="sd">                    upwards being positive.</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">changes</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="nb">setattr</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">changes</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">k</span><span class="p">])</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">s</span><span class="o">.</span><span class="n">ballastChange</span> <span class="o">=</span> <span class="n">changes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">Calc</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="IOR.sailCalcs"><a class="viewcode-back" href="../../index.html#IORAnalysis.IOR.sailCalcs">[docs]</a>    <span class="k">def</span> <span class="nf">sailCalcs</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Calculates **SC** based on certificate sail parameters</span>
+
+<span class="sd">        Performs all relevant calculations for a standard sloop rigged yacht</span>
+<span class="sd">        to calculate the corrected sail area **SC**</span>
+
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        float</span>
+<span class="sd">            **SC**, rated sail area.</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="n">s</span><span class="o">.</span><span class="n">EC</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">E</span> <span class="o">+</span> <span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">BAL</span> <span class="o">-</span> <span class="mf">0.5</span><span class="p">)</span>
+
+        <span class="n">s</span><span class="o">.</span><span class="n">PC</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">P</span>
+        <span class="k">if</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">BAS</span> <span class="o">&gt;</span> <span class="mf">0.05</span> <span class="o">*</span> <span class="n">s</span><span class="o">.</span><span class="n">P</span> <span class="o">+</span> <span class="mi">4</span><span class="p">):</span>
+            <span class="n">s</span><span class="o">.</span><span class="n">PC</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">PC</span> <span class="o">+</span> <span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">BAS</span> <span class="o">-</span> <span class="p">(</span><span class="mf">0.05</span> <span class="o">*</span> <span class="n">s</span><span class="o">.</span><span class="n">P</span> <span class="o">+</span> <span class="mi">4</span><span class="p">))</span>
+        <span class="k">if</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">P</span> <span class="o">+</span> <span class="n">s</span><span class="o">.</span><span class="n">BAS</span> <span class="o">&lt;</span> <span class="mf">0.96</span> <span class="o">*</span> <span class="n">s</span><span class="o">.</span><span class="n">I</span><span class="p">):</span>
+            <span class="n">s</span><span class="o">.</span><span class="n">PC</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">PC</span> <span class="o">+</span> <span class="p">(</span><span class="mf">0.96</span> <span class="o">*</span> <span class="n">s</span><span class="o">.</span><span class="n">I</span> <span class="o">-</span> <span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">P</span> <span class="o">+</span> <span class="n">s</span><span class="o">.</span><span class="n">BAS</span><span class="p">))</span>
+        <span class="k">if</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">BD</span> <span class="o">&gt;</span> <span class="mf">0.05</span> <span class="o">*</span> <span class="n">s</span><span class="o">.</span><span class="n">E</span><span class="p">):</span>
+            <span class="n">s</span><span class="o">.</span><span class="n">PC</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">PC</span> <span class="o">+</span> <span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">BD</span> <span class="o">-</span> <span class="mf">0.05</span> <span class="o">*</span> <span class="n">s</span><span class="o">.</span><span class="n">E</span><span class="p">)</span>
+        <span class="k">if</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">HB</span> <span class="o">&gt;</span> <span class="n">n</span><span class="o">.</span><span class="n">max</span><span class="p">([</span><span class="mf">0.04</span> <span class="o">*</span> <span class="n">s</span><span class="o">.</span><span class="n">E</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">])):</span>
+            <span class="n">s</span><span class="o">.</span><span class="n">PC</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">PC</span> <span class="o">+</span> <span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">HB</span> <span class="o">-</span> <span class="n">n</span><span class="o">.</span><span class="n">max</span><span class="p">([</span><span class="mf">0.04</span> <span class="o">*</span> <span class="n">s</span><span class="o">.</span><span class="n">E</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">]))</span> <span class="o">*</span> <span class="n">s</span><span class="o">.</span><span class="n">P</span> <span class="o">/</span> <span class="n">s</span><span class="o">.</span><span class="n">E</span>
+
+        <span class="n">s</span><span class="o">.</span><span class="n">JC</span> <span class="o">=</span> <span class="n">n</span><span class="o">.</span><span class="n">max</span><span class="p">([</span><span class="n">s</span><span class="o">.</span><span class="n">J</span><span class="p">,</span> <span class="n">s</span><span class="o">.</span><span class="n">SPL</span><span class="p">,</span> <span class="n">s</span><span class="o">.</span><span class="n">SMW</span> <span class="o">/</span> <span class="mf">1.8</span><span class="p">])</span>
+
+        <span class="n">s</span><span class="o">.</span><span class="n">LP</span> <span class="o">=</span> <span class="n">n</span><span class="o">.</span><span class="n">max</span><span class="p">([</span><span class="n">s</span><span class="o">.</span><span class="n">LPG</span> <span class="o">+</span> <span class="n">s</span><span class="o">.</span><span class="n">FSP</span><span class="p">,</span> <span class="mf">1.5</span> <span class="o">*</span> <span class="n">s</span><span class="o">.</span><span class="n">JC</span><span class="p">,</span> <span class="n">s</span><span class="o">.</span><span class="n">LPIS</span><span class="p">])</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">LL</span> <span class="o">=</span> <span class="mf">0.95</span> <span class="o">*</span> <span class="n">n</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">n</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">I</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="n">n</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">JC</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+
+        <span class="n">s</span><span class="o">.</span><span class="n">IC</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">I</span>
+        <span class="k">if</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">SL</span> <span class="o">&gt;</span> <span class="n">s</span><span class="o">.</span><span class="n">LL</span><span class="p">):</span>
+            <span class="n">s</span><span class="o">.</span><span class="n">IC</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">IC</span> <span class="o">+</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">s</span><span class="o">.</span><span class="n">SL</span> <span class="o">-</span> <span class="n">s</span><span class="o">.</span><span class="n">LL</span><span class="p">)</span>
+
+        <span class="n">s</span><span class="o">.</span><span class="n">RSAM</span> <span class="o">=</span> <span class="mf">0.35</span> <span class="o">*</span> <span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">PC</span> <span class="o">*</span> <span class="n">s</span><span class="o">.</span><span class="n">EC</span><span class="p">)</span>
+        <span class="k">if</span><span class="p">(</span><span class="mf">0.2</span> <span class="o">*</span> <span class="n">s</span><span class="o">.</span><span class="n">EC</span> <span class="o">*</span> <span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">PC</span> <span class="o">-</span> <span class="n">s</span><span class="o">.</span><span class="n">E</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">):</span>
+            <span class="n">s</span><span class="o">.</span><span class="n">RSAM</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">RSAM</span> <span class="o">+</span> <span class="mf">0.2</span> <span class="o">*</span> <span class="n">s</span><span class="o">.</span><span class="n">EC</span> <span class="o">*</span> <span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">PC</span> <span class="o">-</span> <span class="n">s</span><span class="o">.</span><span class="n">E</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)</span>
+
+        <span class="n">s</span><span class="o">.</span><span class="n">RSAF</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">s</span><span class="o">.</span><span class="n">IC</span> <span class="o">*</span> <span class="n">s</span><span class="o">.</span><span class="n">JC</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="mf">1.1</span> <span class="o">*</span> <span class="p">((</span><span class="n">s</span><span class="o">.</span><span class="n">LP</span> <span class="o">-</span> <span class="n">s</span><span class="o">.</span><span class="n">JC</span><span class="p">)</span> <span class="o">/</span> <span class="n">s</span><span class="o">.</span><span class="n">LP</span><span class="p">))</span>
+        <span class="k">if</span> <span class="p">(</span><span class="mf">0.125</span> <span class="o">*</span> <span class="n">s</span><span class="o">.</span><span class="n">JC</span> <span class="o">*</span> <span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">IC</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">s</span><span class="o">.</span><span class="n">JC</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">):</span>
+            <span class="n">s</span><span class="o">.</span><span class="n">RSAF</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">RSAF</span> <span class="o">+</span> <span class="p">(</span><span class="mf">0.125</span> <span class="o">*</span> <span class="n">s</span><span class="o">.</span><span class="n">JC</span> <span class="o">*</span> <span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">IC</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">s</span><span class="o">.</span><span class="n">JC</span><span class="p">))</span>
+
+        <span class="n">s</span><span class="o">.</span><span class="n">SATC</span> <span class="o">=</span> <span class="mf">0.1</span> <span class="o">*</span> <span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">RSAF</span> <span class="o">-</span> <span class="mf">1.43</span> <span class="o">*</span> <span class="n">s</span><span class="o">.</span><span class="n">RSAM</span><span class="p">)</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">RSAT</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">SATC</span> <span class="o">+</span> <span class="n">s</span><span class="o">.</span><span class="n">RSAF</span> <span class="o">+</span> <span class="n">s</span><span class="o">.</span><span class="n">RSAM</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">SC</span> <span class="o">=</span> <span class="n">n</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">RSAT</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">s</span><span class="o">.</span><span class="n">SC</span></div>
+
+<div class="viewcode-block" id="IOR.CGFCalc"><a class="viewcode-back" href="../../index.html#IORAnalysis.IOR.CGFCalc">[docs]</a>    <span class="k">def</span> <span class="nf">CGFCalc</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">ballastChange</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Calculates **CGF**.</span>
+
+<span class="sd">        Calculates **CGF**, sets s.actualCGF to the calculated value.</span>
+<span class="sd">        If **CGF** &lt; 0.968 (the minimum in the rule), returns 0.968.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        ballastChange : list</span>
+<span class="sd">            List containing [Ballast Amount, Distance  Moved].</span>
+<span class="sd">            Direction follows standard ship conventions, with</span>
+<span class="sd">            upwards being positive.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        float</span>
+<span class="sd">            **CGF**, centre of gravity factor.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="n">CGF</span> <span class="o">=</span> <span class="p">(</span><span class="mf">2.2</span> <span class="o">/</span> <span class="p">((</span><span class="mf">34562.05963</span> <span class="o">/</span> <span class="p">(</span>
+            <span class="mf">871.13</span> <span class="o">-</span> <span class="n">ballastChange</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">ballastChange</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span> <span class="o">-</span> <span class="mf">5.1</span><span class="p">))</span> <span class="o">+</span> <span class="mf">0.8925</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">actualCGF</span> <span class="o">=</span> <span class="n">CGF</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">CGF</span> <span class="o">&gt;=</span> <span class="mf">0.9680</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">CGF</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mf">0.968</span></div>
+
+<div class="viewcode-block" id="IOR.Calc"><a class="viewcode-back" href="../../index.html#IORAnalysis.IOR.Calc">[docs]</a>    <span class="k">def</span> <span class="nf">Calc</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Calculates final rated length.</span>
+
+<span class="sd">        Returns the unrounded value. For the rounded value</span>
+<span class="sd">        access s.Rating.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        float</span>
+<span class="sd">            **R**, Rated Length (not rounded).</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="n">s</span><span class="o">.</span><span class="n">CGF</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">CGFCalc</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">ballastChange</span><span class="p">)</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">SC</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">sailCalcs</span><span class="p">()</span>
+
+        <span class="n">s</span><span class="o">.</span><span class="n">MR</span> <span class="o">=</span> <span class="p">((</span><span class="mf">0.13</span> <span class="o">*</span> <span class="n">s</span><span class="o">.</span><span class="n">L</span> <span class="o">*</span> <span class="n">s</span><span class="o">.</span><span class="n">SC</span><span class="p">)</span> <span class="o">/</span> <span class="n">n</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">B</span> <span class="o">*</span> <span class="n">s</span><span class="o">.</span><span class="n">D</span><span class="p">)</span> <span class="o">+</span>
+                <span class="mf">0.25</span> <span class="o">*</span> <span class="n">s</span><span class="o">.</span><span class="n">L</span> <span class="o">+</span> <span class="mf">0.2</span> <span class="o">*</span> <span class="n">s</span><span class="o">.</span><span class="n">SC</span> <span class="o">+</span> <span class="n">s</span><span class="o">.</span><span class="n">DC</span> <span class="o">+</span> <span class="n">s</span><span class="o">.</span><span class="n">FC</span><span class="p">)</span> <span class="o">*</span> <span class="n">s</span><span class="o">.</span><span class="n">DLF</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">R</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">MR</span> <span class="o">*</span> <span class="n">s</span><span class="o">.</span><span class="n">EPF</span> <span class="o">*</span> <span class="n">s</span><span class="o">.</span><span class="n">CGF</span> <span class="o">*</span> <span class="n">s</span><span class="o">.</span><span class="n">MAF</span> <span class="o">*</span> <span class="n">s</span><span class="o">.</span><span class="n">SMF</span> <span class="o">*</span> <span class="n">s</span><span class="o">.</span><span class="n">LRP</span> <span class="o">*</span> <span class="n">s</span><span class="o">.</span><span class="n">CBF</span>
+
+        <span class="n">s</span><span class="o">.</span><span class="n">Rating</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">R</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">TCF</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.2424</span> <span class="o">*</span> <span class="n">n</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">Rating</span><span class="p">))</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="mf">0.0567</span> <span class="o">*</span> <span class="n">n</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">Rating</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">s</span><span class="o">.</span><span class="n">R</span></div>
+
+<div class="viewcode-block" id="IOR.ReqRMChange"><a class="viewcode-back" href="../../index.html#IORAnalysis.IOR.ReqRMChange">[docs]</a>    <span class="k">def</span> <span class="nf">ReqRMChange</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">reqRating</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Calculates the RM change required to acheive a certain rating.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        reqRating : int</span>
+<span class="sd">            The desired rating for which RM change should be calculated.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        reqRMChange : float</span>
+<span class="sd">            The required change in righting moment to achieve reqRating,</span>
+<span class="sd">            given in lb feet.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="n">reqCGF</span> <span class="o">=</span> <span class="n">reqRating</span> <span class="o">/</span> <span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">MR</span> <span class="o">*</span> <span class="n">s</span><span class="o">.</span><span class="n">EPF</span> <span class="o">*</span> <span class="n">s</span><span class="o">.</span><span class="n">MAF</span> <span class="o">*</span> <span class="n">s</span><span class="o">.</span><span class="n">SMF</span> <span class="o">*</span> <span class="n">s</span><span class="o">.</span><span class="n">LRP</span> <span class="o">*</span> <span class="n">s</span><span class="o">.</span><span class="n">CBF</span><span class="p">)</span>
+        <span class="n">reqRMChange</span> <span class="o">=</span> <span class="mf">871.13</span> <span class="o">-</span> \
+            <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="p">(((</span><span class="mi">1</span> <span class="o">/</span> <span class="p">((</span><span class="n">reqCGF</span> <span class="o">-</span> <span class="mf">0.8925</span><span class="p">)</span> <span class="o">/</span> <span class="mf">2.2</span><span class="p">))</span> <span class="o">+</span> <span class="mf">5.1</span><span class="p">)</span> <span class="o">/</span> <span class="mf">34562.0593</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">reqRMChange</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, John C Harrington.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

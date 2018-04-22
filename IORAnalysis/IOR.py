@@ -14,6 +14,28 @@ class IOR():
     Currently only runs calculations for sail parameters and
     righting moment. All others should be given.
 
+    Attributes
+    ----------
+    Certificate Values : float
+        All certificate values are available as attributes
+    Rating : float
+        Rating in it's official form, rounded to 1 d.p.
+    ballastChange : list
+        List containing difference from basis vessel ballast
+        position in the format [Ballast Amount, Distance  Moved].
+        Direction follows standard ship conventions, with
+        upwards being positive.
+    actualCGF : float
+        Calculated CGF value. Differs from certificate CGF only if
+        less than the minimum value of 0.9860.
+
+    Methods
+    -------
+    updateCert(changes=[{'P': 41}, [3000, -0.1]])
+        Updates certificate values stored in attributes.
+    reqRMChange(reqRating=27.0)
+        Calculates the RM change required to acheive a certain rating.
+
     '''
 
     def __init__(s, cert={}, ballastChange=[0, 0]):
@@ -46,7 +68,6 @@ class IOR():
             except KeyError:
                 setattr(s, k, base_cert[k])
 
-        s.cert = cert
         s.ballastChange = ballastChange
 
         s.Calc()
@@ -56,12 +77,11 @@ class IOR():
 
         Parameters
         ----------
-
         changes: list
             List containing:
                 0 : dict
                     Dictionary containing changes to certificate values for the yacht.
-                1 : list - optional
+                1 : list, optional
                     List containing [Ballast Amount, Distance  Moved].
                     Direction follows standard ship conventions, with
                     upwards being positive.
