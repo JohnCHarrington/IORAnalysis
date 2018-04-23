@@ -55,47 +55,46 @@ Provides access to all calculated parameters from the IOR
 certificate.
 Currently only runs calculations for sail parameters and
 righting moment. All others should be given.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Attributes:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>Certificate Values</strong></dt>
- <span class="classifier-delimiter">:</span> <span class="classifier">float</span><dd><p class="first last">All certificate values are available as attributes</p>
-</dd>
-<dt><strong>Rating</strong></dt>
- <span class="classifier-delimiter">:</span> <span class="classifier">float</span><dd><p class="first last">Rating in it&#8217;s official form, rounded to 1 d.p.</p>
-</dd>
-<dt><strong>ballastChange</strong></dt>
- <span class="classifier-delimiter">:</span> <span class="classifier">list</span><dd><p class="first last">List containing difference from basis vessel ballast
+<dl class="attribute">
+<dt>
+<code class="descname">Certificate Values</code></dt>
+<dd><p><em>float</em> &#8211; All certificate values are available as attributes</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="IORAnalysis.IOR.Rating">
+<code class="descname">Rating</code><a class="headerlink" href="#IORAnalysis.IOR.Rating" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>float</em> &#8211; Rating in it&#8217;s official form, rounded to 1 d.p.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="IORAnalysis.IOR.ballastChange">
+<code class="descname">ballastChange</code><a class="headerlink" href="#IORAnalysis.IOR.ballastChange" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>list</em> &#8211; List containing difference from basis vessel ballast
 position in the format [Ballast Amount, Distance  Moved].
 Direction follows standard ship conventions, with
 upwards being positive.</p>
-</dd>
-<dt><strong>actualCGF</strong></dt>
- <span class="classifier-delimiter">:</span> <span class="classifier">float</span><dd><p class="first last">Calculated CGF value. Differs from certificate CGF only if
+</dd></dl>
+
+<dl class="attribute">
+<dt id="IORAnalysis.IOR.actualCGF">
+<code class="descname">actualCGF</code><a class="headerlink" href="#IORAnalysis.IOR.actualCGF" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>float</em> &#8211; Calculated CGF value. Differs from certificate CGF only if
 less than the minimum value of 0.9860.</p>
-</dd>
-</dl>
-</td>
-</tr>
-</tbody>
-</table>
-<p class="rubric">Methods</p>
-<table border="1" class="docutils">
-<colgroup>
-<col width="44%" />
-<col width="56%" />
-</colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><strong>updateCert(changes=[{&#8216;P&#8217;: 41}, [3000, -0.1]])</strong></td>
-<td>Updates certificate values stored in attributes.</td>
-</tr>
-<tr class="row-even"><td><strong>reqRMChange(reqRating=27.0)</strong></td>
-<td>Calculates the RM change required to acheive a certain rating.</td>
-</tr>
-</tbody>
-</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="IORAnalysis.IOR.updateCert">
+<code class="descname">updateCert</code><span class="sig-paren">(</span><em>changes=[{'P': 41}, [3000, -0.1]]</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/IORAnalysis/IOR.html#IOR.updateCert"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#IORAnalysis.IOR.updateCert" title="Permalink to this definition">¶</a></dt>
+<dd><p>Updates certificate values stored in attributes.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="IORAnalysis.IOR.reqRMChange">
+<code class="descname">reqRMChange</code><span class="sig-paren">(</span><em>reqRating=27.0</em><span class="sig-paren">)</span><a class="headerlink" href="#IORAnalysis.IOR.reqRMChange" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the RM change required to acheive a certain rating.</p>
+</dd></dl>
+
 <dl class="method">
 <dt id="IORAnalysis.IOR.CGFCalc">
 <code class="descname">CGFCalc</code><span class="sig-paren">(</span><em>s</em>, <em>ballastChange</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/IORAnalysis/IOR.html#IOR.CGFCalc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#IORAnalysis.IOR.CGFCalc" title="Permalink to this definition">¶</a></dt>
@@ -106,21 +105,13 @@ If <strong>CGF</strong> &lt; 0.968 (the minimum in the rule), returns 0.968.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
-<dt><strong>ballastChange</strong></dt>
- <span class="classifier-delimiter">:</span> <span class="classifier">list</span><dd><p class="first last">List containing [Ballast Amount, Distance  Moved].
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>ballastChange</strong> (<em>list</em>) &#8211; List containing [Ballast Amount, Distance  Moved].
 Direction follows standard ship conventions, with
-upwards being positive.</p>
-</dd>
-</dl>
-</td>
+upwards being positive.</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>float</strong></dt>
-<dd><p class="first last"><strong>CGF</strong>, centre of gravity factor.</p>
-</dd>
-</dl>
-</td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><strong>CGF</strong>, centre of gravity factor.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">float</td>
 </tr>
 </tbody>
 </table>
@@ -136,12 +127,9 @@ access s.Rating.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>float</strong></dt>
-<dd><p class="first last"><strong>R</strong>, Rated Length (not rounded).</p>
-</dd>
-</dl>
-</td>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><strong>R</strong>, Rated Length (not rounded).</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">float</td>
 </tr>
 </tbody>
 </table>
@@ -155,20 +143,12 @@ access s.Rating.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
-<dt><strong>reqRating</strong></dt>
- <span class="classifier-delimiter">:</span> <span class="classifier">int</span><dd><p class="first last">The desired rating for which RM change should be calculated.</p>
-</dd>
-</dl>
-</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>reqRating</strong> (<em>int</em>) &#8211; The desired rating for which RM change should be calculated.</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>reqRMChange</strong></dt>
- <span class="classifier-delimiter">:</span> <span class="classifier">float</span><dd><p class="first last">The required change in righting moment to achieve reqRating,
-given in lb feet.</p>
-</dd>
-</dl>
-</td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><strong>reqRMChange</strong> &#8211; The required change in righting moment to achieve reqRating,
+given in lb feet.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">float</td>
 </tr>
 </tbody>
 </table>
@@ -184,40 +164,31 @@ to calculate the corrected sail area <strong>SC</strong></p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>float</strong></dt>
-<dd><p class="first last"><strong>SC</strong>, rated sail area.</p>
-</dd>
-</dl>
-</td>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><strong>SC</strong>, rated sail area.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">float</td>
 </tr>
 </tbody>
 </table>
 </dd></dl>
 
 <dl class="method">
-<dt id="IORAnalysis.IOR.updateCert">
-<code class="descname">updateCert</code><span class="sig-paren">(</span><em>s</em>, <em>changes</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/IORAnalysis/IOR.html#IOR.updateCert"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#IORAnalysis.IOR.updateCert" title="Permalink to this definition">¶</a></dt>
+<dt>
+<code class="descname">updateCert</code><span class="sig-paren">(</span><em>s</em>, <em>changes</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/IORAnalysis/IOR.html#IOR.updateCert"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Updates certificate values stored in attributes</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>changes: list</strong></dt>
-<dd><dl class="first last docutils">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>changes</strong> (<em>list</em>) &#8211; <dl class="docutils">
 <dt>List containing:</dt>
 <dd><dl class="first last docutils">
 <dt>0</dt>
- <span class="classifier-delimiter">:</span> <span class="classifier">dict</span><dd><p class="first last">Dictionary containing changes to certificate values for the yacht.</p>
-</dd>
+ <span class="classifier-delimiter">:</span> <span class="classifier">dict</span><dd>Dictionary containing changes to certificate values for the yacht.</dd>
 <dt>1</dt>
- <span class="classifier-delimiter">:</span> <span class="classifier">list, optional</span><dd><p class="first last">List containing [Ballast Amount, Distance  Moved].
+ <span class="classifier-delimiter">:</span> <span class="classifier">list, optional</span><dd>List containing [Ballast Amount, Distance  Moved].
 Direction follows standard ship conventions, with
-upwards being positive.</p>
-</dd>
-</dl>
-</dd>
+upwards being positive.</dd>
 </dl>
 </dd>
 </dl>
