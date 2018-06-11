@@ -11,3 +11,5 @@ IORAnalysis can be installed through pip:
 If you wish to develop it further, clone this repository to your desktop, navigate to it in a terminal and install:
 
 ``` pip install -e . ```
+
+This will allow you to make changes without having to reinstall the module every time.
