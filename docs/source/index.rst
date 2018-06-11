@@ -16,11 +16,12 @@ Contents:
 .. autoclass:: IOR
     :members:
 
+.. autoclass:: BaseYacht
+    :members:
 
-Indices and tables
-==================
+.. autoclass:: Yacht
+    :members:
 
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+.. autoclass:: WinDes
+    :members:
 

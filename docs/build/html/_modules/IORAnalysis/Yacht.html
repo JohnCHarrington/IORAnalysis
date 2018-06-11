@@ -1,0 +1,307 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>IORAnalysis.Yacht &mdash; IOR Analysis 0.1.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" /> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> IOR Analysis
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <!-- Local TOC -->
+              <div class="local-toc"></div>
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">IOR Analysis</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>IORAnalysis.Yacht</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for IORAnalysis.Yacht</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">.BaseYacht</span> <span class="k">import</span> <span class="n">BaseYacht</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">p</span>
+<span class="kn">import</span> <span class="nn">copy</span>
+
+
+<div class="viewcode-block" id="Yacht"><a class="viewcode-back" href="../../index.html#IORAnalysis.Yacht">[docs]</a><span class="k">class</span> <span class="nc">Yacht</span><span class="p">():</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Generates a yacht ID, runs IOR calculations and</span>
+<span class="sd">    allows retrieval of speed data if it has been calculated.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    BaseYacht : :obj:`IORAnalysis.BaseYacht.BaseYacht`</span>
+<span class="sd">        The basis vessel to be modified, provides VPP file and</span>
+<span class="sd">        initial IOR certificate values.</span>
+<span class="sd">    IOR : :obj:`IORAnalysis.IOR.IOR`</span>
+<span class="sd">        Instance of the IOR() class. Used to access all rating data.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">BaseYacht</span><span class="p">:</span> <span class="n">BaseYacht</span><span class="p">,</span> <span class="n">changes</span><span class="p">:</span> <span class="nb">list</span><span class="o">=</span><span class="p">[{},</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]],</span> <span class="n">h5ID</span><span class="p">:</span> <span class="nb">str</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;&#39;&#39;&#39;</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">BaseYacht</span> <span class="o">=</span> <span class="n">BaseYacht</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">h5ID</span> <span class="o">=</span> <span class="n">h5ID</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">IOR</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">BaseYacht</span><span class="o">.</span><span class="n">IOR</span><span class="p">)</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">changes</span> <span class="o">=</span> <span class="n">changes</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">changes</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        :obj:`list`:</span>
+<span class="sd">            * :obj:`dict`</span>
+<span class="sd">                Dictionary containing changes to certificate values for</span>
+<span class="sd">                the yacht.</span>
+<span class="sd">            * :obj:`list`</span>
+<span class="sd">                List containing [Ballast Amount, Distance  Moved].</span>
+<span class="sd">                Direction follows standard ship conventions, with</span>
+<span class="sd">                upwards being positive.</span>
+<span class="sd">        If blank, the yacht is a copy of the basis vessel, but can</span>
+<span class="sd">        then be used to access VPP data if it exists.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="n">s</span><span class="o">.</span><span class="n">__changes</span>
+
+    <span class="nd">@changes</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">changes</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">c</span><span class="p">:</span> <span class="nb">list</span><span class="p">):</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">IOR</span><span class="o">.</span><span class="n">updateCert</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">__changes</span> <span class="o">=</span> <span class="n">c</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">h5ID</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        :obj:`str`:</span>
+<span class="sd">            The identifier for the specific h5 file the VPP data for this</span>
+<span class="sd">            yacht is stored in. Can be used to separate sets of data from</span>
+<span class="sd">            the same basis vessel into different files, for instance one</span>
+<span class="sd">            for each case study.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="n">s</span><span class="o">.</span><span class="n">__h5ID</span>
+
+    <span class="nd">@h5ID</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">h5ID</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">h5ID</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">h5ID</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
+            <span class="n">s</span><span class="o">.</span><span class="n">__h5ID</span> <span class="o">=</span> <span class="s1">&#39;.</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">h5ID</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">s</span><span class="o">.</span><span class="n">__h5ID</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">ID</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        str:</span>
+<span class="sd">            Unique identifier string for this yacht, generated from *changes*.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">changes</span>
+        <span class="n">ID</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">c</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+            <span class="n">ID</span> <span class="o">+=</span> <span class="s2">&quot;.&quot;</span> <span class="o">+</span> <span class="n">var</span> <span class="o">+</span> <span class="s2">&quot;-&quot;</span> <span class="o">+</span> \
+                <span class="p">(</span><span class="s1">&#39;</span><span class="si">%f</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">c</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">var</span><span class="p">]</span> <span class="o">/</span> <span class="mf">3.28084</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+                 <span class="p">)</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s1">&#39;0&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span>
+        <span class="n">ID</span> <span class="o">=</span> <span class="n">ID</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+
+        <span class="k">if</span> <span class="n">c</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]:</span>
+            <span class="n">ID</span> <span class="o">+=</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">c</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span> <span class="o">+</span> <span class="s2">&quot;.&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">c</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="n">ID</span>
+
+<div class="viewcode-block" id="Yacht.getSpeedDF"><a class="viewcode-back" href="../../index.html#IORAnalysis.Yacht.getSpeedDF">[docs]</a>    <span class="k">def</span> <span class="nf">getSpeedDF</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">p</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Returns the times for 1nm for this yacht.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">read_hdf</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}{}</span><span class="s1">.h5&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">BaseYacht</span><span class="o">.</span><span class="n">VPPFile</span><span class="p">,</span> <span class="n">s</span><span class="o">.</span><span class="n">h5ID</span><span class="p">),</span> <span class="n">s</span><span class="o">.</span><span class="n">ID</span><span class="p">)</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">df</span></div>
+
+<div class="viewcode-block" id="Yacht.getSpeed"><a class="viewcode-back" href="../../index.html#IORAnalysis.Yacht.getSpeed">[docs]</a>    <span class="k">def</span> <span class="nf">getSpeed</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">ws</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">wa</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Returns the time for 1nm for this yacht at the given wind speed</span>
+<span class="sd">        and angle.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="n">s</span><span class="o">.</span><span class="n">getSpeedDF</span><span class="p">()[</span><span class="n">ws</span><span class="p">][</span><span class="n">wa</span><span class="p">]</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, John C Harrington.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'0.1.1',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: ''
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          
+          SphinxRtdTheme.Navigation.enableSticky();
+          
+      });
+  </script> 
+
+</body>
+</html>

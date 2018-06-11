@@ -1,0 +1,24 @@
+\indexentry{IORAnalysis (module)|hyperpage}{1}
+\indexentry{IOR (class in IORAnalysis)|hyperpage}{1}
+\indexentry{Rating (IORAnalysis.IOR attribute)|hyperpage}{1}
+\indexentry{ballastChange (IORAnalysis.IOR attribute)|hyperpage}{1}
+\indexentry{actualCGF (IORAnalysis.IOR attribute)|hyperpage}{1}
+\indexentry{Calc() (IORAnalysis.IOR method)|hyperpage}{1}
+\indexentry{ReqRMChange() (IORAnalysis.IOR method)|hyperpage}{1}
+\indexentry{updateCert() (IORAnalysis.IOR method)|hyperpage}{1}
+\indexentry{BaseYacht (class in IORAnalysis)|hyperpage}{1}
+\indexentry{cert (IORAnalysis.BaseYacht attribute)|hyperpage}{1}
+\indexentry{VPPFile (IORAnalysis.BaseYacht attribute)|hyperpage}{1}
+\indexentry{Yacht (class in IORAnalysis)|hyperpage}{2}
+\indexentry{BaseYacht (IORAnalysis.Yacht attribute)|hyperpage}{2}
+\indexentry{IOR (IORAnalysis.Yacht attribute)|hyperpage}{2}
+\indexentry{ID (IORAnalysis.Yacht attribute)|hyperpage}{2}
+\indexentry{changes (IORAnalysis.Yacht attribute)|hyperpage}{2}
+\indexentry{getSpeed() (IORAnalysis.Yacht method)|hyperpage}{2}
+\indexentry{getSpeedDF() (IORAnalysis.Yacht method)|hyperpage}{2}
+\indexentry{h5ID (IORAnalysis.Yacht attribute)|hyperpage}{2}
+\indexentry{WinDes (class in IORAnalysis)|hyperpage}{2}
+\indexentry{WinDes.WinDes4 (class in IORAnalysis)|hyperpage}{2}
+\indexentry{queue() (IORAnalysis.WinDes.WinDes4 method)|hyperpage}{2}
+\indexentry{runQueue() (IORAnalysis.WinDes.WinDes4 method)|hyperpage}{2}
+\indexentry{saveQueue() (IORAnalysis.WinDes.WinDes4 method)|hyperpage}{3}

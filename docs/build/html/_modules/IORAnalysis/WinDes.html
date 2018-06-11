@@ -1,0 +1,394 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>IORAnalysis.WinDes &mdash; IOR Analysis 0.1.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" /> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> IOR Analysis
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <!-- Local TOC -->
+              <div class="local-toc"></div>
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">IOR Analysis</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>IORAnalysis.WinDes</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for IORAnalysis.WinDes</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">p</span>
+<span class="kn">from</span> <span class="nn">.Yacht</span> <span class="k">import</span> <span class="n">Yacht</span>
+<span class="kn">from</span> <span class="nn">sys</span> <span class="k">import</span> <span class="n">platform</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">from</span> <span class="nn">io</span> <span class="k">import</span> <span class="n">StringIO</span>
+<span class="k">if</span> <span class="p">(</span><span class="n">platform</span> <span class="o">==</span> <span class="s2">&quot;win32&quot;</span><span class="p">):</span>
+    <span class="kn">import</span> <span class="nn">autoit</span>
+
+
+<span class="k">def</span> <span class="nf">log</span><span class="p">(</span><span class="n">msg</span><span class="p">):</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;log.txt&#39;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+
+
+
+<div class="viewcode-block" id="WinDes"><a class="viewcode-back" href="../../index.html#IORAnalysis.WinDes">[docs]</a><span class="k">class</span> <span class="nc">WinDes</span><span class="p">():</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Wraps WinDes4 class, enforce usage within &#39;with&#39;</span>
+
+<span class="sd">    This ensures queue will always be either saved</span>
+<span class="sd">    to file after use without continuous file changes.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    VPP : :obj:`WinDes4()`</span>
+<span class="sd">        The VPP object.</span>
+
+<span class="sd">    Example</span>
+<span class="sd">    -------</span>
+<span class="sd">    &gt;&gt;&gt; with WinDes() as VPP:</span>
+<span class="sd">            queue(yacht)</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;&#39;&#39;</span>
+<div class="viewcode-block" id="WinDes.WinDes4"><a class="viewcode-back" href="../../index.html#IORAnalysis.WinDes.WinDes4">[docs]</a>    <span class="k">class</span> <span class="nc">WinDes4</span><span class="p">():</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Run WinDesign4 through PyAutoIt. </span>
+
+<span class="sd">        Allows queueing of yachts for</span>
+<span class="sd">        analysis when WinDesign is not available. Yachts are stored in</span>
+<span class="sd">        HDF5 database with name format:</span>
+<span class="sd">        &quot;SailVar1-SailVal1.SailVarN-SailValN_BallastWeight-BallastDistance&quot;</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">yachtName</span><span class="o">=</span><span class="s1">&#39;Indulgence&#39;</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>  <span class="c1"># Attempt to open queue file</span>
+                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;queue.json&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">q_file</span><span class="p">:</span>
+                    <span class="n">s</span><span class="o">.</span><span class="n">q</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">q_file</span><span class="p">)</span>
+            <span class="c1"># If queue file does not exist, define new empty queue</span>
+            <span class="k">except</span> <span class="p">(</span><span class="ne">OSError</span><span class="p">,</span> <span class="ne">IOError</span><span class="p">):</span>
+                <span class="n">s</span><span class="o">.</span><span class="n">q</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="c1"># TODO: Where is the best place to input Yacht Name?</span>
+            <span class="n">s</span><span class="o">.</span><span class="n">yachtName</span> <span class="o">=</span> <span class="n">yachtName</span>
+
+<div class="viewcode-block" id="WinDes.WinDes4.queue"><a class="viewcode-back" href="../../index.html#IORAnalysis.WinDes.WinDes4.queue">[docs]</a>        <span class="k">def</span> <span class="nf">queue</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">Yacht</span><span class="p">:</span> <span class="n">Yacht</span><span class="p">):</span>
+            <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">            Adds a new yacht to the current queue,</span>
+<span class="sd">            if it isn&#39;t already there</span>
+
+<span class="sd">            Parameters</span>
+<span class="sd">            ----------</span>
+<span class="sd">            Yacht : :obj:`Yacht()`</span>
+<span class="sd">            &#39;&#39;&#39;</span>
+
+            <span class="n">queueYacht</span> <span class="o">=</span> <span class="p">[</span><span class="n">Yacht</span><span class="o">.</span><span class="n">ID</span><span class="p">,</span> <span class="n">Yacht</span><span class="o">.</span><span class="n">changes</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">Yacht</span><span class="o">.</span><span class="n">changes</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                          <span class="n">Yacht</span><span class="o">.</span><span class="n">BaseYacht</span><span class="o">.</span><span class="n">VPPFile</span><span class="p">,</span> <span class="n">Yacht</span><span class="o">.</span><span class="n">h5ID</span><span class="p">]</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">s</span><span class="o">.</span><span class="n">q</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">queueYacht</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                <span class="n">s</span><span class="o">.</span><span class="n">q</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">queueYacht</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="WinDes.WinDes4.saveQueue"><a class="viewcode-back" href="../../index.html#IORAnalysis.WinDes.WinDes4.saveQueue">[docs]</a>        <span class="k">def</span> <span class="nf">saveQueue</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+            <span class="sd">&#39;&#39;&#39;Writes the current queue to a file&#39;&#39;&#39;</span>
+
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;queue.json&#39;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">q_file</span><span class="p">:</span>
+                <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">q</span><span class="p">,</span> <span class="n">q_file</span><span class="p">)</span></div>
+
+        <span class="k">def</span> <span class="nf">__isWinDesInstalled</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">platform</span> <span class="o">==</span> <span class="s2">&quot;win32&quot;</span><span class="p">):</span>
+                <span class="c1"># Can&#39;t find any way of checking more accurately than this...</span>
+                <span class="c1"># ...but at least this can definitively tell me my Mac does not have WinDes!</span>
+                <span class="k">return</span> <span class="kc">True</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">def</span> <span class="nf">__openWinDes</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+            <span class="n">autoit</span><span class="o">.</span><span class="n">win_activate</span><span class="p">(</span><span class="s1">&#39;WinDesign4&#39;</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">__runYacht</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">yachtParams</span><span class="p">):</span>
+            <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">            Opens a new instance of BaseYacht VPP File in WinDesign4, sets</span>
+<span class="sd">            required parameters, runs analysis and saves results to file</span>
+<span class="sd">            &#39;&#39;&#39;</span>
+
+            <span class="n">autoit</span><span class="o">.</span><span class="n">opt</span><span class="p">(</span><span class="s2">&quot;SendKeyDelay&quot;</span><span class="p">,</span> <span class="mi">250</span><span class="p">)</span>
+            <span class="n">autoit</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="s2">&quot;!fo&quot;</span> <span class="o">+</span> <span class="n">yachtParams</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">autoit</span><span class="o">.</span><span class="n">opt</span><span class="p">(</span><span class="s2">&quot;SendKeyDelay&quot;</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+            <span class="n">autoit</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">yachtParams</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="mi">1</span><span class="p">:])</span>
+            <span class="n">autoit</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{ENTER}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="c1"># Set Sail Parameters</span>
+
+            <span class="k">for</span> <span class="n">var</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">yachtParams</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="c1"># Find Index of req. variable and add 5 to get TabNo</span>
+                <span class="n">varArray</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">,</span> <span class="s2">&quot;E&quot;</span><span class="p">,</span> <span class="s2">&quot;BAD&quot;</span><span class="p">,</span> <span class="s2">&quot;IG&quot;</span><span class="p">,</span> <span class="s2">&quot;J&quot;</span><span class="p">,</span> <span class="s2">&quot;LPG&quot;</span><span class="p">,</span>
+                            <span class="s2">&quot;HB&quot;</span><span class="p">,</span> <span class="s2">&quot;ISP&quot;</span><span class="p">,</span> <span class="s2">&quot;SPL&quot;</span><span class="p">,</span> <span class="s2">&quot;SMW&quot;</span><span class="p">,</span> <span class="s2">&quot;SLU&quot;</span><span class="p">,</span> <span class="s2">&quot;SLE&quot;</span><span class="p">]</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">tabNo</span> <span class="o">=</span> <span class="n">varArray</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">var</span><span class="p">)</span> <span class="o">+</span> <span class="mi">5</span>
+                <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                    <span class="c1"># Should probably raise an exception here</span>
+                    <span class="k">continue</span>
+
+                <span class="n">autoit</span><span class="o">.</span><span class="n">opt</span><span class="p">(</span><span class="s2">&quot;SendKeyDelay&quot;</span><span class="p">,</span> <span class="mi">250</span><span class="p">)</span>
+                <span class="n">autoit</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="s2">&quot;!yd&quot;</span><span class="p">)</span>
+                <span class="n">autoit</span><span class="o">.</span><span class="n">win_wait_active</span><span class="p">(</span><span class="s2">&quot;Yacht Define &amp; Automake&quot;</span><span class="p">)</span>
+                <span class="n">autoit</span><span class="o">.</span><span class="n">opt</span><span class="p">(</span><span class="s2">&quot;SendKeyDelay&quot;</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+                <span class="n">autoit</span><span class="o">.</span><span class="n">send</span><span class="p">(</span>
+                    <span class="s2">&quot;{TAB &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">tabNo</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;}&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span>
+                        <span class="n">val</span> <span class="o">/</span> <span class="mf">3.28084</span>
+                    <span class="p">)</span> <span class="o">+</span>
+                    <span class="s2">&quot;{TAB &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span>
+                        <span class="mi">36</span> <span class="o">-</span> <span class="n">tabNo</span>
+                    <span class="p">)</span> <span class="o">+</span>
+                    <span class="s2">&quot;}</span><span class="si">{SPACE}{TAB}{SPACE}{TAB}{SPACE}{TAB}{SPACE}{ENTER}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
+
+            <span class="c1"># Set Ballast</span>
+
+            <span class="k">if</span> <span class="n">yachtParams</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">!=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]:</span>
+                <span class="n">autoit</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="s2">&quot;!yf&quot;</span><span class="p">)</span>
+                <span class="n">autoit</span><span class="o">.</span><span class="n">win_wait_active</span><span class="p">(</span><span class="s2">&quot;Flotation List Edit - </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">yachtName</span><span class="p">))</span>
+                <span class="n">autoit</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{TAB}{ENTER}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">autoit</span><span class="o">.</span><span class="n">win_wait_active</span><span class="p">(</span>
+                    <span class="s2">&quot;Flot: Condition 1     Method: Standard WinDesign&quot;</span><span class="p">)</span>
+                <span class="n">autoit</span><span class="o">.</span><span class="n">send</span><span class="p">(</span>
+                    <span class="s2">&quot;</span><span class="si">{TAB}</span><span class="s2">^C^{TAB 2}{TAB 7}&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span>
+                        <span class="o">-</span><span class="p">((</span><span class="n">yachtParams</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span>
+                            <span class="mf">0.45359237</span><span class="p">)</span> <span class="o">*</span>
+                            <span class="p">(</span><span class="n">yachtParams</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="mf">0.3048</span><span class="p">)</span> <span class="o">/</span>
+                            <span class="n">autoit</span><span class="o">.</span><span class="n">clip_get</span><span class="p">())</span>
+                    <span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="si">{ENTER}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
+
+            <span class="c1"># Run Yacht and Save Data</span>
+
+            <span class="n">autoit</span><span class="o">.</span><span class="n">opt</span><span class="p">(</span><span class="s2">&quot;SendKeyDelay&quot;</span><span class="p">,</span> <span class="mi">250</span><span class="p">)</span>
+            <span class="c1"># Hit the &quot;Copy Full Report of Tables&quot; Button</span>
+            <span class="n">autoit</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{ESC}{F5}</span><span class="s2">!f&quot;</span><span class="p">)</span>
+            <span class="n">autoit</span><span class="o">.</span><span class="n">opt</span><span class="p">(</span><span class="s2">&quot;SendKeyDelay&quot;</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+            <span class="n">autoit</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="s2">&quot;{DOWN 14}</span><span class="si">{ENTER}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="c1"># Close Yacht</span>
+            <span class="n">autoit</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="s2">&quot;!fcn&quot;</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="n">autoit</span><span class="o">.</span><span class="n">clip_get</span><span class="p">(</span><span class="mi">1610612736</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">__saveYacht</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">yachtParams</span><span class="p">,</span> <span class="n">result</span><span class="p">):</span>
+            <span class="n">r</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="mi">12</span><span class="p">:]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n\n\n</span><span class="s1">&#39;</span><span class="p">)</span>  <span class="c1"># Split tables from clipboard</span>
+            <span class="c1"># Grab table 14 and pretend it&#39;s a file!</span>
+            <span class="n">stringFile</span> <span class="o">=</span> <span class="n">StringIO</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="mi">13</span><span class="p">])</span>
+            <span class="c1"># Read the pretend file into a dataframe</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">stringFile</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">skiprows</span><span class="o">=</span><span class="p">{</span>
+                                            <span class="mi">19</span><span class="p">,</span> <span class="mi">20</span><span class="p">},</span> <span class="n">header</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">index_col</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="c1"># Drop pointless empty last column which has magically appeared</span>
+            <span class="n">df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="c1"># Set column names to floats, as they&#39;re strings by default</span>
+            <span class="n">df</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+            <span class="c1"># Aaaand breathe...we&#39;ve saved that data</span>
+            <span class="n">df</span><span class="o">.</span><span class="n">to_hdf</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}{}</span><span class="s1">.h5&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">yachtParams</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">yachtParams</span><span class="p">[</span><span class="mi">4</span><span class="p">]),</span> <span class="n">yachtParams</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">log</span><span class="p">(</span><span class="s2">&quot;Data Saved for </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">yachtParams</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+
+<div class="viewcode-block" id="WinDes.WinDes4.runQueue"><a class="viewcode-back" href="../../index.html#IORAnalysis.WinDes.WinDes4.runQueue">[docs]</a>        <span class="k">def</span> <span class="nf">runQueue</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+            <span class="sd">&#39;&#39;&#39;Runs VPP for all yachts currently queued&#39;&#39;&#39;</span>
+
+            <span class="n">s</span><span class="o">.</span><span class="n">__openWinDes</span><span class="p">()</span>
+            <span class="n">autoit</span><span class="o">.</span><span class="n">win_wait_active</span><span class="p">(</span><span class="s2">&quot;WinDesign4&quot;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">yacht</span> <span class="ow">in</span> <span class="n">s</span><span class="o">.</span><span class="n">q</span><span class="p">[:]:</span>
+                <span class="n">r</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">__runYacht</span><span class="p">(</span><span class="n">yacht</span><span class="p">)</span>
+                <span class="n">s</span><span class="o">.</span><span class="n">__saveYacht</span><span class="p">(</span><span class="n">yacht</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span>
+                <span class="n">s</span><span class="o">.</span><span class="n">q</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">yacht</span><span class="p">)</span></div></div>
+    <span class="k">def</span> <span class="nf">__enter__</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">VPPObj</span> <span class="o">=</span> <span class="n">WinDes4</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">s</span><span class="o">.</span><span class="n">VPPObj</span>
+
+    <span class="k">def</span> <span class="nf">__exit__</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_value</span><span class="p">,</span> <span class="n">traceback</span><span class="p">):</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">VPPObj</span><span class="o">.</span><span class="n">saveQueue</span><span class="p">()</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, John C Harrington.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'0.1.1',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: ''
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          
+          SphinxRtdTheme.Navigation.enableSticky();
+          
+      });
+  </script> 
+
+</body>
+</html>

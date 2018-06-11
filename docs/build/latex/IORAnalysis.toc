@@ -1,0 +1,4 @@
+\select@language {english}
+\contentsline {paragraph}{Example}{2}{paragraph*.22}
+\contentsline {chapter}{Python Module Index}{5}{section*.27}
+\contentsline {chapter}{Index}{7}{section*.28}
