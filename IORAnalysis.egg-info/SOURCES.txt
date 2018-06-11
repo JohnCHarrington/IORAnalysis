@@ -1,9 +1,0 @@
-IORAnalysis/BaseYacht.py
-IORAnalysis/IOR.py
-IORAnalysis/WinDes.py
-IORAnalysis/Yacht.py
-IORAnalysis/__init__.py
-IORAnalysis.egg-info/PKG-INFO
-IORAnalysis.egg-info/SOURCES.txt
-IORAnalysis.egg-info/dependency_links.txt
-IORAnalysis.egg-info/top_level.txt
